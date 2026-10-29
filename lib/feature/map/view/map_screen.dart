@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:metro_mate/core/localization/app_localization.dart';
+import 'package:metro_mate/core/theme/setting_cubit.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -12,13 +15,31 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Map Screen')),
+      appBar: AppBar(
+        title: Text(context.tr('map_screen')),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.language),
+            onPressed: () {
+              context.read<SettingsCubit>().toggleLanguage();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.brightness_6),
+            onPressed: () {
+              context.read<SettingsCubit>().toggleTheme();
+            },
+          ),
+        ],
+      ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Map Screen Content'),
+          Center(child: Text(context.tr('map_content'))),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => FirebaseAuth.instance.signOut(),
-            child: const Text('Logout'),
+            child: Text(context.tr('logout')),
           ),
         ],
       ),

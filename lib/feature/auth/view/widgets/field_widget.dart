@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/const/colors.dart';
-
 class FieldWidget extends StatelessWidget {
   const FieldWidget({
     super.key,
@@ -20,6 +18,9 @@ class FieldWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return Container(
       constraints: const BoxConstraints(minHeight: 58),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -31,29 +32,30 @@ class FieldWidget extends StatelessWidget {
                 TextFormField(
                   controller: controller,
                   obscureText: isPassword && hidden,
-                  style: const TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontSize: 18,
-                    color: AppColors.textPrimary,
+                    color: colorScheme.onSurface,
                   ),
                   decoration: InputDecoration(
-                    fillColor: AppColors.background,
+                    fillColor: theme.scaffoldBackgroundColor,
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(14),
-                      borderSide: const BorderSide(
-                        color: AppColors.textPrimary,
+                      borderSide: BorderSide(
+                        color: colorScheme.onSurface,
                       ),
                     ),
                     labelText: label,
-                    labelStyle: const TextStyle(
+                    labelStyle: theme.textTheme.bodySmall?.copyWith(
                       fontSize: 12,
-                      color: AppColors.textSecondary,
+                      color: colorScheme.onSurfaceVariant,
                     ),
                     border: InputBorder.none,
                   ),
                 ),
                 if (isPassword)
-                  Positioned(
-                    left: 8,
+                  // استخدام PositionedDirectional لضبط المكان بناءً على لغة النظام تلقائياً
+                  PositionedDirectional(
+                    end: 8, // ستكون على اليسار في العربية، وعلى اليمين في الإنجليزية
                     top: 0,
                     bottom: 0,
                     child: GestureDetector(
@@ -63,7 +65,7 @@ class FieldWidget extends StatelessWidget {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         size: 18,
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),

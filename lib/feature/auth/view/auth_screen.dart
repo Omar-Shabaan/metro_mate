@@ -1,15 +1,11 @@
-// ignore_for_file: deprecated_member_use
-
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'package:metro_mate/core/localization/app_localization.dart';
 import '../../../core/const/colors.dart';
 import '../view_model/auth_cubit.dart';
 import '../view_model/auth_state.dart';
 import 'widgets/field_widget.dart';
-
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
@@ -45,17 +41,17 @@ class _AuthScreenState extends State<AuthScreen> {
       final password = passwordController.text;
 
       if (email.isEmpty || password.isEmpty) {
-        showMessage('من فضلك أدخل البريد الإلكتروني وكلمة المرور');
+        showMessage(context.tr('enter_email_pass'));
         return;
       }
 
       if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email)) {
-        showMessage('البريد الإلكتروني غير صالح');
+        showMessage(context.tr('invalid_email'));
         return;
       }
 
-      if (password.length < 6) {
-        showMessage('كلمة المرور يجب ألا تقل عن 6 أحرف');
+      if (password.length < 8) {
+        showMessage(context.tr('short_password'));
         return;
       }
 
@@ -64,7 +60,7 @@ class _AuthScreenState extends State<AuthScreen> {
     }
 
     if (passwordController.text != confirmController.text) {
-      showMessage('كلمتا المرور غير متطابقتين');
+      showMessage(context.tr('passwords_not_match'));
       return;
     }
 
@@ -94,20 +90,22 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final titleHeight = getTitleHeight(screenHeight);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return BlocConsumer<AuthCubit, AuthCubitState>(
       listener: (context, state) {
         if (state is AuthError) {
-        showMessage(state.message);
+          showMessage(state.message);
         }
         if (state is AuthSuccess && state.needsConfirmation) {
-          showMessage('تم إنشاء الحساب، تحقق من بريدك الإلكتروني لتأكيده');
+          showMessage(context.tr('account_created'));
         }
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: colorScheme.surface,
           body: Stack(
             children: [
               _buildHeroImage(titleHeight + 56),
@@ -115,7 +113,7 @@ class _AuthScreenState extends State<AuthScreen> {
                 child: Column(
                   children: [
                     _buildTitleArea(titleHeight),
-                    _buildWhiteContainer(screenHeight , titleHeight, isLoading),
+                    _buildWhiteContainer(screenHeight, titleHeight, isLoading, theme, colorScheme),
                   ],
                 ),
               ),
@@ -135,13 +133,13 @@ class _AuthScreenState extends State<AuthScreen> {
         children: [
           Image.asset(heroImage, fit: BoxFit.cover),
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  AppColors.darkest.withOpacity(0.2),
-                  AppColors.darkest.withOpacity(0.95),
+                  Colors.black26,
+                  Colors.black87,
                 ],
               ),
             ),
@@ -151,12 +149,10 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildTitleArea(
-    double height
-  ) {
+  Widget _buildTitleArea(double height) {
     return Container(
       height: height,
-      alignment: Alignment.bottomRight,
+      alignment: AlignmentDirectional.bottomStart,
       padding: const EdgeInsets.fromLTRB(24, 0, 24, 30),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -179,9 +175,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               const SizedBox(width: 10),
-              const Text(
-                'دليل مترو القاهرة',
-                style: TextStyle(
+              Text(
+                context.tr('metro_guide'),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -190,9 +186,9 @@ class _AuthScreenState extends State<AuthScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
-            'رحلتك تبدأ هنا',
-            style: TextStyle(
+          Text(
+            context.tr('journey_starts'),
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -203,30 +199,30 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildWhiteContainer(double screenHeight , double titleHeight, bool isLoading) {
+  Widget _buildWhiteContainer(double screenHeight, double titleHeight, bool isLoading, ThemeData theme, ColorScheme colorScheme) {
     return Container(
       width: double.infinity,
       constraints: BoxConstraints(minHeight: screenHeight - titleHeight),
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _buildColorStrip(),
           const SizedBox(height: 18),
-          _buildTabs(),
+          _buildTabs(theme, colorScheme),
           const SizedBox(height: 18),
           if (!isLogin) ...[
-            FieldWidget(label: 'الاسم الكامل', controller: nameController),
+            FieldWidget(label: context.tr('full_name'), controller: nameController),
             const SizedBox(height: 18),
           ],
-          FieldWidget(label: 'البريد الإلكتروني', controller: emailController),
+          FieldWidget(label: context.tr('email'), controller: emailController),
           const SizedBox(height: 18),
           FieldWidget(
-            label: 'كلمة المرور',
+            label: context.tr('password'),
             controller: passwordController,
             isPassword: true,
             hidden: hidePassword,
@@ -235,7 +231,7 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 18),
           if (!isLogin) ...[
             FieldWidget(
-              label: 'تأكيد كلمة المرور',
+              label: context.tr('confirm_password'),
               controller: confirmController,
               isPassword: true,
               hidden: hideConfirm,
@@ -244,12 +240,12 @@ class _AuthScreenState extends State<AuthScreen> {
             const SizedBox(height: 18),
           ],
           if (isLogin) ...[
-            const Align(
+            Align(
               alignment: AlignmentDirectional.centerEnd,
               child: Text(
-                'نسيت كلمة المرور؟',
+                context.tr('forgot_password'),
                 style: TextStyle(
-                  color: AppColors.primary,
+                  color: colorScheme.primary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
                 ),
@@ -257,15 +253,13 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
             const SizedBox(height: 18),
           ],
-          _buildMainButton(isLoading),
+          _buildMainButton(isLoading, colorScheme),
           const SizedBox(height: 18),
           Center(
             child: Text(
-              isLogin
-                  ? 'أو تابع باستخدام'
-                  : 'بالتسجيل، أنت توافق على الشروط وسياسة الخصوصية.',
-              style: const TextStyle(
-                color: AppColors.textSecondary,
+              isLogin ? context.tr('or_continue_with') : context.tr('terms_agree'),
+              style: TextStyle(
+                color: colorScheme.onSurfaceVariant,
                 fontSize: 10,
               ),
             ),
@@ -273,11 +267,11 @@ class _AuthScreenState extends State<AuthScreen> {
           const SizedBox(height: 18),
           Row(
             children: [
-              Expanded(child: _buildSocialButton('Google', Icons.g_mobiledata, () {
+              Expanded(child: _buildSocialButton('Google', Icons.g_mobiledata, colorScheme, () {
                 context.read<AuthCubit>().googleSignIn();
               })),
               const SizedBox(width: 12),
-              Expanded(child: _buildSocialButton('Apple', Icons.apple , (){})),
+              Expanded(child: _buildSocialButton('Apple', Icons.apple, colorScheme, () {})),
             ],
           ),
         ],
@@ -302,21 +296,21 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildTabs() {
+  Widget _buildTabs(ThemeData theme, ColorScheme colorScheme) {
     return Container(
       height: 36,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: AppColors.background,
+        color: theme.scaffoldBackgroundColor,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          _buildTab('تسجيل الدخول', isLogin, () {
+          _buildTab(context.tr('login'), isLogin, colorScheme, () {
             setState(() => isLogin = true);
           }),
           const SizedBox(width: 4),
-          _buildTab('إنشاء حساب', !isLogin, () {
+          _buildTab(context.tr('signup'), !isLogin, colorScheme, () {
             setState(() => isLogin = false);
           }),
         ],
@@ -324,21 +318,22 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildTab(String text, bool selected, VoidCallback onTap) {
+  Widget _buildTab(String text, bool selected, ColorScheme colorScheme, VoidCallback onTap) {
     return Expanded(
       child: GestureDetector(
         onTap: onTap,
         child: Container(
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            color: selected ? Colors.white : Colors.transparent,
+            color: selected ? colorScheme.surface : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
             text,
             style: TextStyle(
               fontSize: 13,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+              color: selected ? colorScheme.primary : colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -346,65 +341,65 @@ class _AuthScreenState extends State<AuthScreen> {
     );
   }
 
-  Widget _buildMainButton(bool isLoading) {
+  Widget _buildMainButton(bool isLoading, ColorScheme colorScheme) {
     return GestureDetector(
       onTap: isLoading ? null : submit,
       child: Container(
         height: 50,
         decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
+          color: colorScheme.primary,
           borderRadius: BorderRadius.circular(20),
         ),
         child: isLoading
-          ? const Center(
-              child: SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.5,
-                  color: Colors.white,
-                ),
-              ),
-            )
-          : Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.arrow_forward, color: Colors.white, size: 18),
-                const SizedBox(width: 10),
-                Text(
-                  isLogin ? 'تسجيل الدخول' : 'إنشاء حساب',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+            ? Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2.5,
+                    color: colorScheme.onPrimary,
                   ),
                 ),
-              ],
-            ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.arrow_forward, color: colorScheme.onPrimary, size: 18),
+                  const SizedBox(width: 10),
+                  Text(
+                    isLogin ? context.tr('login') : context.tr('signup'),
+                    style: TextStyle(
+                      color: colorScheme.onPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
       ),
     );
   }
   
-  Widget _buildSocialButton(String name, IconData icon , VoidCallback onTap) {
+  Widget _buildSocialButton(String name, IconData icon, ColorScheme colorScheme, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 40,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(color: colorScheme.outline),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 22, color: AppColors.textPrimary),
+            Icon(icon, size: 22, color: colorScheme.onSurface),
             const SizedBox(width: 6),
             Text(
               name,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
               ),
             ),
           ],
