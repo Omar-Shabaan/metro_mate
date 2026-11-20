@@ -38,7 +38,7 @@ class AppTheme {
     final textSecondary =
         isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
     final hint = isDark ? AppColors.darkTextHint : AppColors.textHint;
-    final accent = isDark ? AppColors.active : AppColors.primary;
+    final accent = isDark ? AppColors.textOnDark : AppColors.textPrimary;
 
     final colorScheme = ColorScheme(
       brightness: brightness,

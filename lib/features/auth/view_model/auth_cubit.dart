@@ -63,6 +63,26 @@ class AuthCubit extends Cubit<AuthCubitState> {
     }
   }
 
+  Future<void> resetPassword({required String email}) async {
+    emit(AuthLoading());
+    try {
+      if (email.isEmpty) {
+        emit(AuthError('الرجاء إدخال البريد الإلكتروني'));
+        return;
+      }
+      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email)) {
+        emit(AuthError('الرجاء إدخال بريد إلكتروني صالح'));
+        return;
+      }
+      await _repo.resetPassword(email: email);
+      emit(AuthSuccess());
+    } on FirebaseAuthException catch (e) {
+      emit(AuthError(e.message ?? 'حدث خطأ، حاول مرة أخرى'));
+    } catch (e) {
+      emit(AuthError('حدث خطأ، حاول مرة أخرى'));
+    }
+  }
+
   Future<void> signOut() async {
     emit(AuthLoading());
     try {

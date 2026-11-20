@@ -2,13 +2,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:metro_mate/core/theme/setting_cubit.dart';
+import 'package:metro_mate/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
-import 'feature/auth/data/repo/auth_repo.dart';
-import 'feature/auth/view/auth_screen.dart';
-import 'feature/auth/view_model/auth_cubit.dart';
-import 'feature/map/view/map_screen.dart';
+import 'features/auth/data/repo/auth_repo.dart';
+import 'features/auth/view/auth_screen.dart';
+import 'features/auth/view_model/auth_cubit.dart';
+import 'features/map/view/map_screen.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -33,12 +33,8 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           locale: settingsState.locale,
-          supportedLocales: const [Locale('ar'), Locale('en')],
-          localizationsDelegates: const [
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
+          supportedLocales: L10n.supportedLocales,
+          localizationsDelegates: L10n.localizationsDelegates,
           title: 'Metro Mate',
           theme: AppTheme.lightFor(settingsState.locale),
           darkTheme: AppTheme.darkFor(settingsState.locale),

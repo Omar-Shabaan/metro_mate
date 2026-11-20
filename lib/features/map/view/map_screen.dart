@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:metro_mate/core/localization/app_localization.dart';
+import 'package:metro_mate/core/localization/l10n_extension.dart';
 import 'package:metro_mate/core/theme/setting_cubit.dart';
 
 class MapScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.tr('map_screen')),
+        title: Text("map............................."),
         actions: [
           IconButton(
             icon: const Icon(Icons.language),
@@ -35,11 +35,11 @@ class _MapScreenState extends State<MapScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Center(child: Text(context.tr('map_content'))),
+          Center(child: Text("tttttt")),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => FirebaseAuth.instance.signOut(),
-            child: Text(context.tr('logout')),
+            child: Text(context.l10n.logout),
           ),
         ],
       ),

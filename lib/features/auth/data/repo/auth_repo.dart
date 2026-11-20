@@ -77,6 +77,10 @@ class AuthRepo {
     return result;
   }
 
+  Future<void> resetPassword({required String email}) {
+    return auth.sendPasswordResetEmail(email: email);
+  }
+
   Future<void> signOut() async {
     await GoogleSignIn.instance.signOut();
     await auth.signOut();
