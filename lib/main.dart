@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:metro_mate/core/theme/setting_cubit.dart';
 import 'package:metro_mate/l10n/app_localizations.dart';
 import 'core/theme/app_theme.dart';
@@ -13,7 +14,13 @@ import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await Hive.initFlutter();
+  await Hive.openBox('SettingsBox');
 
   runApp(
     BlocProvider(
@@ -41,7 +48,7 @@ class MyApp extends StatelessWidget {
           themeMode: settingsState.themeMode,
           home: MultiBlocProvider(
             providers: [
-              BlocProvider(create: (context) => AuthCubit(AuthRepo()))
+              BlocProvider(create: (context) => AuthCubit(AuthRepo())),
             ],
             child: StreamBuilder<User?>(
               stream: FirebaseAuth.instance.authStateChanges(),

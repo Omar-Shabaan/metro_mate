@@ -59,12 +59,15 @@ class _ForgotPasswordDialogState extends State<ForgotPasswordDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
+          child: Text(l10n.cancel , style: const TextStyle(fontSize: 14),),
         ),
         TextButton(
           onPressed: send,
-          child: Text(l10n.send),
-          style: TextButton.styleFrom(backgroundColor: AppColors.primary),
+          child: Text(l10n.send , style: const TextStyle(fontSize: 14),),
+          style: TextButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: AppColors.background,
+          ),
         ),
       ],
     );
